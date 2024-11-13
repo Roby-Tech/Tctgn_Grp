@@ -1,8 +1,26 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+def mozza(dati):
+    '''
+    prende 5 righe e fa la media dei valori, poi salva in un nuovo df
+    '''
+    medie = []
+    
+    for i in range(0, len(dati), 5):
+        blocco = dati.iloc[i:i+5]           #seleziona 5 righe
+        media_blocco = blocco.mean()  
+        medie.append(media_blocco)  
+        
+    medie_df = pd.DataFrame(medie)
+    
+    return medie_df
+
+        
+
 # Leggi i dati dal file CSV
-data = pd.read_csv('sensor_data.csv')
+data = pd.read_csv('Tctgn_Grp/ML_TACTIGON/sensor_data.csv')
+data = mozza(data)
 
 # Creazione dei grafici
 fig, axs = plt.subplots(2, 1, figsize=(10, 8))
