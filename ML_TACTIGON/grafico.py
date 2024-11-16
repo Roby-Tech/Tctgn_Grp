@@ -19,7 +19,7 @@ def mozza(dati):
         
 
 # Leggi i dati dal file CSV
-data = pd.read_csv('Tctgn_Grp/ML_TACTIGON/sensor_data.csv')
+data = pd.read_csv('./sensor_data.csv')
 data = mozza(data)
 
 # Creazione dei grafici

@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 if __name__ ==  '__main__':
-    with CustomTSkin("C0:83:3F:39:21:57", Hand.RIGHT) as tskin:
+    with CustomTSkin("C0:83:23:39:22:57", Hand.RIGHT) as tskin:
         while True:
             if not tskin.connected:
                 print("Connecting...")
@@ -13,12 +13,12 @@ if __name__ ==  '__main__':
             
             touch = tskin.touch
 
-            if touch and touch.one_finger == OneFingerGesture.SINGLE_TAP:
+            '''if touch and touch.one_finger == OneFingerGesture.SINGLE_TAP:
                 print("Inizio Ascolto")
                 tskin.select_audio()
                 time.sleep(3)
                 tskin.select_sensors()
-                print("Fine Ascolto")
+                print("Fine Ascolto")'''
 
             time.sleep(tskin.TICK)
 

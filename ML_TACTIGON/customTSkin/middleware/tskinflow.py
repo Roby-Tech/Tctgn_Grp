@@ -27,7 +27,7 @@ class TSkinFlow(Process):
                 if isinstance(data, list) and len(data) >= 6:
                     # Estrai i valori di accelerazione e giroscopio dalla lista
                     accX, accY, accZ = data[0], data[1], data[2]
-                    accZ = accZ + 9.81
+                    accZ = accZ + 0.81
                     accTOT = sqrt(accX**2 + accY**2 + accZ**2)-9.81
                     gyroX, gyroY, gyroZ = data[3], data[4], data[5]
                     gyroTOT = sqrt(gyroX**2 + gyroY**2 + gyroZ**2)
@@ -39,8 +39,10 @@ class TSkinFlow(Process):
                         
                 else:
                     print("Errore: dati ricevuti in un formato non previsto:", data)
+                
+                #print(f"Accelerazione: X={accX}, Y={accY}, Z={accZ}")
 
-                if accTOT < 2:
+                '''if accTOT < 2:
                     print('Fermo')
                 else:
                     print('Movimento rilevato')
@@ -49,5 +51,35 @@ class TSkinFlow(Process):
                 if gyroTOT < 1:
                     print('Rotazione ferma')
                 else:
-                    print('Rotazione in corso')
+                    print('Rotazione in corso')'''
+                
+                '''#Movimento X
+                if accX <= -9:
+                    if accX < (accY and accZ):
+                        print('Sinistra')
+                        print(f'accX: {accX}')
+                elif accX >= 9:
+                    if accX > (accY and accZ):
+                        print('Destra')
+                        print(f'accX: {accX}')
+                
+                #Movimento Y
+                if accY <= -9:
+                    if accY < (accX and accZ):
+                        print('Sotto')
+                        print(f'accY: {accY}')
+                elif accY >= 9:
+                    if accY > (accX and accZ):
+                        print('Sopra')
+                        print(f'accY: {accY}')
 
+                #Movimento Z
+                if accZ <= -9:
+                    if accZ > (accX and accY):
+                        print('Indietro')
+                        print(f'accZ: {accZ}')
+                elif accZ >= 9:
+                    if accY > (accX and accY):
+                        print('Avanti')
+                        print(f'accZ: {accZ}')'''
+                
