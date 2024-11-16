@@ -20,8 +20,8 @@ def load_and_preprocess_data(files, labels):
 
 # Parametri
 sequence_length = 50
-files = ['destra_sinistra.csv', 'sopra_sotto.csv', 'avanti_indietro.csv']
-labels = [0, 1, 2]  # Etichette per ciascun file
+files = ['ML_TACTIGON/customTSkin/data/fermo.csv','ML_TACTIGON/customTSkin/data/destra.csv', 'ML_TACTIGON/customTSkin/data/sinistra.csv', 'ML_TACTIGON/customTSkin/data/sopra.csv','ML_TACTIGON/customTSkin/data/sotto.csv', 'ML_TACTIGON/customTSkin/data/avanti.csv', 'ML_TACTIGON/customTSkin/data/indietro.csv']
+labels = [0, 1, 2, 3, 4, 5, 6]  # Etichette per ciascun file
 
 # Caricamento e suddivisione dei dati
 X, y = load_and_preprocess_data(files, labels)
@@ -34,7 +34,7 @@ model.add(LSTM(64, input_shape=(sequence_length, 6), return_sequences=True))
 model.add(Dropout(0.2))
 model.add(LSTM(32))
 model.add(Dropout(0.2))
-model.add(Dense(3, activation='softmax'))
+model.add(Dense(7, activation='softmax'))
 
 # Compilazione del modello
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
@@ -45,3 +45,4 @@ model.fit(X_train, y_train, epochs=5, batch_size=32, validation_split=0.2)
 # Valutazione
 loss, accuracy = model.evaluate(X_test, y_test)
 print(f"Loss: {loss}, Accuracy: {accuracy}")
+
