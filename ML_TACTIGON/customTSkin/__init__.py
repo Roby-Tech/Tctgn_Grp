@@ -1,8 +1,8 @@
-from numpy import add
+import numpy
 from typing import Optional
 from multiprocessing import Pipe
-from tactigon_gear import Ble, Hand, OneFingerGesture
 from .middleware import TSkinFlow, TSkinAudio
+from tactigon_gear import Ble, Hand, OneFingerGesture
 
 class CustomTSkin(Ble):
     tskinflow: TSkinFlow

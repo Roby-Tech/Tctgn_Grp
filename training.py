@@ -20,8 +20,15 @@ def load_and_preprocess_data(files, labels):
 
 # Parametri
 sequence_length = 50
-files = ['ML_TACTIGON/customTSkin/data/fermo.csv','ML_TACTIGON/customTSkin/data/destra.csv', 'ML_TACTIGON/customTSkin/data/sinistra.csv', 'ML_TACTIGON/customTSkin/data/sopra.csv','ML_TACTIGON/customTSkin/data/sotto.csv', 'ML_TACTIGON/customTSkin/data/avanti.csv', 'ML_TACTIGON/customTSkin/data/indietro.csv']
-labels = [0, 1, 2, 3, 4, 5, 6]  # Etichette per ciascun file
+files = ['ML_TACTIGON/customTSkin/data/fermo.csv',
+         'ML_TACTIGON/customTSkin/data/destra.csv',
+         'ML_TACTIGON/customTSkin/data/sinistra.csv',
+         'ML_TACTIGON/customTSkin/data/sopra.csv',
+         'ML_TACTIGON/customTSkin/data/sotto.csv',
+         'ML_TACTIGON/customTSkin/data/avanti.csv',
+         'ML_TACTIGON/customTSkin/data/indietro.csv']
+
+labels = ['fermo', 'destra', 'sinistra', 'sopra', 'sotto', 'avanti', 'indietro']  # Etichette per ciascun file
 
 # Caricamento e suddivisione dei dati
 X, y = load_and_preprocess_data(files, labels)
