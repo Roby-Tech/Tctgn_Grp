@@ -5,37 +5,10 @@ import time
 import math 
 from math import sqrt 
 
-def create_label(x,y,z):
 
-        # direzione destra/sinistra
-        threshold_direction = 9
-        if y > threshold_direction:
-            dir_y = "destra" # destra
-        elif y < -(threshold_direction):
-            dir_y = "sinistra" # sinistra
-        else:
-            dir_y = "acc. nulla" # fermo
-
-        # direzione avanti/dietro
-        if x > threshold_direction:
-            dir_x = "sopra" # sopra
-        elif x < -(threshold_direction):
-            dir_x = "sotto" # sotto
-        else:
-            dir_x = "acc. nulla" # fermo
-
-        # direzione sopra/sotto
-        if z > threshold_direction:
-            dir_z = "avanti" # avanti
-        elif z < -(threshold_direction):
-            dir_z = "indietro" # indietro
-        else:
-            dir_z = "acc. nulla" # fermo
-
-        return [dir_x, dir_y, dir_z]
 
 class TSkinFlow(Process):
-    def __init__(self, sensor_rx: _ConnectionBase, csv_file='prova.csv'):
+    def __init__(self, sensor_rx: _ConnectionBase, csv_file='DATI.csv'):
         Process.__init__(self)
         self.sensor_rx = sensor_rx
         self.csv_file = csv_file
@@ -43,9 +16,69 @@ class TSkinFlow(Process):
         # Crea e inizializza il file CSV con intestazioni
         with open(self.csv_file, mode='w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(['timestamp', 'accX', 'accY', 'accZ',"Label"])
-            #writer.writerow(['timestamp', 'accX', 'accY', 'accZ' ,'gyroX', 'gyroY', 'gyroZ'])
+            #writer.writerow(['timestamp', 'accX', 'accY', 'accZ',"Label"])
+            writer.writerow(['timestamp', 'accX', 'accY', 'accZ' ,'gyroX', 'gyroY', 'gyroZ','Label'])
+    def create_label(self,x,y,z,gx,gy,gz):
 
+        # ACCELERAZIONI
+
+        threshold_direction = 5
+
+        # direzione destra/sinistra
+        if y > threshold_direction:
+            dir_y = "avanti" # destra
+        elif y < -(threshold_direction):
+            dir_y = "indietro" # sinistra
+        else:
+            dir_y = "fermo" # fermo
+
+        # direzione avanti/dietro
+        if x > threshold_direction:
+            dir_x = "sopra" # sopra
+        elif x < -(threshold_direction):
+            dir_x = "sotto" # sotto
+        else:
+            dir_x = "fermo" # fermo
+
+        # direzione sopra/sotto
+        if z > threshold_direction:
+            dir_z = "destra" # avanti
+        elif z < -(threshold_direction):
+            dir_z = "sinistra" # indietro
+        else:
+            dir_z = "fermo" # fermo
+
+        # ACCELERAZIONI ANGOLARI
+
+        threshold_rotation = 1
+
+        # accelerazione angolare destra/sinistra
+        if gy > threshold_rotation:
+            rot_y = "destra polso" # destra
+        elif gy < -(threshold_rotation):
+            rot_y = "sinistra polso" # sinistra
+        else:
+            rot_y = "fermo" # fermo
+
+        # accelerazione angolare avanti/dietro
+        if gx > threshold_rotation:
+            rot_x = "sinistra braccio" # sopra
+        elif gx < -(threshold_rotation):
+            rot_x = "destra braccio" # sotto
+        else:
+            rot_x = "fermo" # fermo
+
+        # accelerazione angolare sopra/sotto
+        if gz > threshold_rotation:
+            rot_z = "impenna" # avanti
+        elif gz < -(threshold_rotation):
+            rot_z = "picchiata" # indietro
+        else:
+            rot_z = "fermo" # fermo
+
+        return [dir_x, dir_y, dir_z, rot_x, rot_y, rot_z]
+    
+    
     def run(self):
         while True:
             if self.sensor_rx.poll(1):  # Attendi fino a 1 secondo per ricevere dati
@@ -63,9 +96,10 @@ class TSkinFlow(Process):
                     gyroTOT = sqrt(gyroX**2 + gyroY**2 + gyroZ**2)
                     label = []
                     with open(self.csv_file, mode='a', newline='') as file:
-                            label = create_label(accX,accY,accZ)
+                            label = self.create_label(accX,accY,accZ,gyroX,gyroY,gyroZ)
                             writer = csv.writer(file)
-                            writer.writerow([time.time(), accX, accY, accZ, label])
+                            writer.writerow([time.time(), accX, accY, accZ, gyroX, gyroY, gyroZ, label])
+                            print(label)
                     
                     """#Movimento X
                     if accX <= -9:
