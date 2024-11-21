@@ -61,11 +61,11 @@ class TSkinFlow(Process):
                     accTOT = sqrt(accX**2 + accY**2 + accZ**2)-9.81
                     gyroX, gyroY, gyroZ = data[3], data[4], data[5]
                     gyroTOT = sqrt(gyroX**2 + gyroY**2 + gyroZ**2)
-                    
-                    with open(self.csv_file, label, mode='a', newline='') as file:
+                    label = []
+                    with open(self.csv_file, mode='a', newline='') as file:
                             label = create_label(accX,accY,accZ)
                             writer = csv.writer(file)
-                            writer.writerow([time.time(), accX, accY, accZ. label])
+                            writer.writerow([time.time(), accX, accY, accZ, label])
                     
                     """#Movimento X
                     if accX <= -9:
