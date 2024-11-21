@@ -53,33 +53,33 @@ class TSkinFlow(Process):
                 else:
                     print('Rotazione in corso')'''
                 
-                '''#Movimento X
-                if accX <= -9:
+                #Movimento X
+                '''if accX <= -9:
                     if accX < (accY and accZ):
-                        print('Sinistra')
+                        print('Sopra')
                         print(f'accX: {accX}')
                 elif accX >= 9:
                     if accX > (accY and accZ):
-                        print('Destra')
+                        print('Sotto')
                         print(f'accX: {accX}')
                 
                 #Movimento Y
                 if accY <= -9:
                     if accY < (accX and accZ):
-                        print('Sotto')
+                        print('Sinistra')
                         print(f'accY: {accY}')
                 elif accY >= 9:
                     if accY > (accX and accZ):
-                        print('Sopra')
+                        print('Destra')
                         print(f'accY: {accY}')
 
                 #Movimento Z
-                if accZ <= -9:
-                    if accZ > (accX and accY):
+                if accZ <= -5:
+                    if accZ < (accX and accY):
                         print('Indietro')
                         print(f'accZ: {accZ}')
-                elif accZ >= 9:
-                    if accY > (accX and accY):
+                elif accZ >= 5:
+                    if accZ > (accX and accY):
                         print('Avanti')
-                        print(f'accZ: {accZ}')'''
-                
+                        print(f'accZ: {accZ}')
+                '''
