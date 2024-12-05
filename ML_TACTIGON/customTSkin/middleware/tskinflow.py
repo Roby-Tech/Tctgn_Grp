@@ -2,8 +2,12 @@ from multiprocessing import Process, Event
 from multiprocessing.connection import _ConnectionBase
 import csv
 import time
-import math 
+import joblib
 from math import sqrt 
+from tensorflow.keras.models import load_model
+
+
+model = load_model('model_movement.keras')
 
 
 
@@ -18,6 +22,7 @@ class TSkinFlow(Process):
             writer = csv.writer(file)
             #writer.writerow(['timestamp', 'accX', 'accY', 'accZ',"Label"])
             writer.writerow(['timestamp', 'accX', 'accY', 'accZ' ,'gyroX', 'gyroY', 'gyroZ','Label'])
+            
     def create_label(self,x,y,z,gx,gy,gz):
 
         # ACCELERAZIONI
@@ -95,33 +100,38 @@ class TSkinFlow(Process):
                     gyroX, gyroY, gyroZ = data[3], data[4], data[5]
                     gyroTOT = sqrt(gyroX**2 + gyroY**2 + gyroZ**2)
                     label = []
+                    
+                    #pred real time sui dati del tactigon
+                    lista_pred = []                    
+                    data2 = data[:3]
+                    
+                    for acc in data2:
+                        lista_pred.append(acc)
+                        
+                    lista_liste = []
+                    lista_liste.append(lista_pred)
+                    lista_pred.clear()
+                    
+                    if len(lista_liste) == 10:
+                        scaler = joblib.load('scaler.soblib')
+                        lista_liste = scaler.transform(lista_liste)
+                        model.predict(lista_liste)
+                        
+                        lista_liste.clear()
+                                     
+                    
                     with open(self.csv_file, mode='a', newline='') as file:
                             label = self.create_label(accX,accY,accZ,gyroX,gyroY,gyroZ)
                             writer = csv.writer(file)
                             writer.writerow([time.time(), accX, accY, accZ, gyroX, gyroY, gyroZ, label])
                             print(label)
                     
-                    """#Movimento X
-                    if accX <= -9:
-                        # Aggiungi una riga al CSV con i dati e un timestamp
-                        with open(self.csv_file, label, mode='a', newline='') as file:
-                            label = create_label(accX,accY,accZ)
-                            writer = csv.writer(file)
-                            writer.writerow([time.time(), accX, accY, accZ. label])
-                        #writer.writerow([time.time(), accX, accY, accZ, gyroX, gyroY, gyroZ])
-                            print('Sinistra')
-                            print(f'accX: {accX}')
-                    elif accX >= 9:
-                        with open(self.csv_file, mode='a', newline='') as file:
-                            label = create_label(accX,accY,accZ)
-                            writer = csv.writer(file)
-                            writer.writerow([time.time(), accX, accY, accZ])
-                            print('Destra')
-                            print(f'accX: {accX}')"""
-                    
                 else:
                     print("Errore: dati ricevuti in un formato non previsto:", data)
                 
+                
+                
+                #sogliole
                 #print(f"Accelerazione: X={accX}, Y={accY}, Z={accZ}")
 
                 '''if accTOT < 2:
