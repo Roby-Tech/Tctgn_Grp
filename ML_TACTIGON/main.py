@@ -3,9 +3,8 @@ import time
 import pandas as pd
 import matplotlib.pyplot as plt
 
-#C0:83:41:39:21:57: TSKIN50
 if __name__ ==  '__main__':
-    with CustomTSkin("C0:83:3E:39:21:57", Hand.RIGHT) as tskin:
+    with CustomTSkin("C0:83:23:39:22:57", Hand.RIGHT) as tskin:
         while True:
             if not tskin.connected:
                 print("Connecting...")

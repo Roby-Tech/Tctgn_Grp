@@ -4,7 +4,7 @@ import csv
 import time
 import joblib
 from math import sqrt 
-from tensorflow.keras.models import load_model
+from keras.models import load_model
 
 
 model = load_model('model_movement.keras')
@@ -115,7 +115,11 @@ class TSkinFlow(Process):
                     if len(lista_liste) == 10:
                         scaler = joblib.load('scaler.soblib')
                         lista_liste = scaler.transform(lista_liste)
-                        model.predict(lista_liste)
+                        pred = model.predict(lista_liste)
+                        
+                        soglia_corretto = 0.5
+                        predicted_labels = (pred > soglia_corretto)
+                        print(predicted_labels)
                         
                         lista_liste.clear()
                                      
