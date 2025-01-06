@@ -4,10 +4,12 @@ import csv
 import time
 import joblib
 from math import sqrt 
-from keras.models import load_model
+import keyboard
+import time
+#from keras.models import load_model
 
 
-model = load_model('model_movement.keras')
+#model = load_model('model_movement.keras')
 
 
 
@@ -23,72 +25,62 @@ class TSkinFlow(Process):
             #writer.writerow(['timestamp', 'accX', 'accY', 'accZ',"Label"])
             writer.writerow(['timestamp', 'accX', 'accY', 'accZ' ,'gyroX', 'gyroY', 'gyroZ','Label'])
             
-    def create_label(self,x,y,z,gx,gy,gz):
+    def create_label(self,x,y,z):
 
         # ACCELERAZIONI
-
-        threshold_direction = 5
+        dir_x = 'fermo'
+        dir_y = 'fermo'
+        dir_z = 'fermo'
+        
+        threshold_direction = 6
+        down_threshold_direction = 6
+        
+        z_threshold_direction = 3
+        z_down_threshold_direction = 3
 
         # direzione destra/sinistra
         if y > threshold_direction:
-            dir_y = "avanti" # destra
-        elif y < -(threshold_direction):
-            dir_y = "indietro" # sinistra
-        else:
+            if y > (x and z):
+                dir_y = "indietro" # destra
+                
+        elif y < -(down_threshold_direction):
+            if y < (x and z):
+                dir_y = "avanti" # sinistra
+                
+        elif -(down_threshold_direction) < y < threshold_direction:
             dir_y = "fermo" # fermo
+
 
         # direzione avanti/dietro
         if x > threshold_direction:
-            dir_x = "sopra" # sopra
-        elif x < -(threshold_direction):
-            dir_x = "sotto" # sotto
-        else:
+            if x > (y and z):
+                dir_x = "sotto" # sopra
+        elif x < -(down_threshold_direction):
+            if x < (y and z):
+                dir_x = "sopra" # sotto
+        elif -(down_threshold_direction) < x < threshold_direction:
             dir_x = "fermo" # fermo
+                
 
         # direzione sopra/sotto
-        if z > threshold_direction:
-            dir_z = "destra" # avanti
-        elif z < -(threshold_direction):
-            dir_z = "sinistra" # indietro
-        else:
+        if z > z_threshold_direction:
+            if z > (x and y):
+                dir_z = "sinistra" # avanti
+        elif z < -(z_down_threshold_direction):
+            if z < (x and y):
+                dir_z = "destra" # indietro
+        elif -(z_down_threshold_direction) < z < z_threshold_direction:
             dir_z = "fermo" # fermo
+            
 
-        # ACCELERAZIONI ANGOLARI
-
-        threshold_rotation = 1
-
-        # accelerazione angolare destra/sinistra
-        if gy > threshold_rotation:
-            rot_y = "destra polso" # destra
-        elif gy < -(threshold_rotation):
-            rot_y = "sinistra polso" # sinistra
-        else:
-            rot_y = "fermo" # fermo
-
-        # accelerazione angolare avanti/dietro
-        if gx > threshold_rotation:
-            rot_x = "sinistra braccio" # sopra
-        elif gx < -(threshold_rotation):
-            rot_x = "destra braccio" # sotto
-        else:
-            rot_x = "fermo" # fermo
-
-        # accelerazione angolare sopra/sotto
-        if gz > threshold_rotation:
-            rot_z = "impenna" # avanti
-        elif gz < -(threshold_rotation):
-            rot_z = "picchiata" # indietro
-        else:
-            rot_z = "fermo" # fermo
-
-        return [dir_x, dir_y, dir_z, rot_x, rot_y, rot_z]
+        return [dir_x, dir_y, dir_z]
     
     
     def run(self):
         while True:
             if self.sensor_rx.poll(1):  # Attendi fino a 1 secondo per ricevere dati
                 data = self.sensor_rx.recv()
-                # Diagnostica: stampa i dati ricevuti
+                # Diagnostica: stampa i dati ricevuti 
 
 
                 # Verifica che `data` sia una lista della lunghezza corretta
@@ -101,7 +93,7 @@ class TSkinFlow(Process):
                     gyroTOT = sqrt(gyroX**2 + gyroY**2 + gyroZ**2)
                     label = []
                     
-                    #pred real time sui dati del tactigon
+                    '''#pred real time sui dati del tactigon
                     lista_pred = []                    
                     data2 = data[:3]
                     
@@ -121,14 +113,21 @@ class TSkinFlow(Process):
                         predicted_labels = (pred > soglia_corretto)
                         print(predicted_labels)
                         
-                        lista_liste.clear()
+                        lista_liste.clear()'''
                                      
                     
                     with open(self.csv_file, mode='a', newline='') as file:
-                            label = self.create_label(accX,accY,accZ,gyroX,gyroY,gyroZ)
+                         if keyboard.is_pressed('p'):
+                            while keyboard.is_pressed('p'):  # Aspetta che il pulsante venga rilasciato
+                                time.sleep(0.1)
+                                print('stopp')
+                                
+                         else:            
+                            label = self.create_label(accX,accY,accZ)
                             writer = csv.writer(file)
-                            writer.writerow([time.time(), accX, accY, accZ, gyroX, gyroY, gyroZ, label])
+                            writer.writerow([time.time(), accX, accY, accZ, label])
                             print(label)
+                            
                     
                 else:
                     print("Errore: dati ricevuti in un formato non previsto:", data)
@@ -149,8 +148,8 @@ class TSkinFlow(Process):
                 else:
                     print('Rotazione in corso')'''
                 
-                #Movimento X
-                '''if accX <= -9:
+                '''#Movimento X
+                if accX <= -9:
                     if accX < (accY and accZ):
                         print('Sopra')
                         print(f'accX: {accX}')
@@ -159,23 +158,24 @@ class TSkinFlow(Process):
                         print('Sotto')
                         print(f'accX: {accX}')
                 
-            """ #Movimento Y
+             #Movimento Y
                 if accY <= -9:
                     if accY < (accX and accZ):
-                        print('Sinistra')
+                        print('avanti')
                         print(f'accY: {accY}')
                 elif accY >= 9:
                     if accY > (accX and accZ):
-                        print('Destra')
+                        print('indietro')
                         print(f'accY: {accY}')
 
                 #Movimento Z
                 if accZ <= -5:
                     if accZ < (accX and accY):
-                        print('Indietro')
+                        print('destra')
                         print(f'accZ: {accZ}')
                 elif accZ >= 5:
                     if accZ > (accX and accY):
-                        print('Avanti')
+                        print('sinistra')
                         print(f'accZ: {accZ}')
-                '''
+                
+'''
