@@ -6,6 +6,11 @@ import joblib
 from math import sqrt 
 import keyboard
 import time
+import torch
+import torch.nn as nn
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+
 #from keras.models import load_model
 
 
@@ -18,6 +23,10 @@ class TSkinFlow(Process):
         Process.__init__(self)
         self.sensor_rx = sensor_rx
         self.csv_file = csv_file
+        # Caricamento del modello e dello scaler
+        self.model = torch.load('model_movement.pth')  # Carica il modello
+        self.model.eval()  # Imposta il modello in modalità di valutazione
+        self.scaler = joblib.load('scaler.joblib')  # Carica lo scaler
 
         # Crea e inizializza il file CSV con intestazioni
         with open(self.csv_file, mode='w', newline='') as file:
@@ -77,6 +86,9 @@ class TSkinFlow(Process):
     
     
     def run(self):
+
+        data_buffer = []
+
         while True:
             if self.sensor_rx.poll(1):  # Attendi fino a 1 secondo per ricevere dati
                 data = self.sensor_rx.recv()
@@ -92,6 +104,30 @@ class TSkinFlow(Process):
                     gyroX, gyroY, gyroZ = data[3], data[4], data[5]
                     gyroTOT = sqrt(gyroX**2 + gyroY**2 + gyroZ**2)
                     label = []
+
+                    # Aggiungi i dati al buffer
+                    data_buffer.append([accX, accY, accZ])
+                    
+                    # Mantieni solo gli ultimi 10 campioni
+                    if len(data_buffer) > 10:
+                        data_buffer.pop(0)
+
+                    # Effettua la previsione solo se il buffer è pieno
+                    if len(data_buffer) == 10:
+                        # Applica lo scaler al buffer
+                        scaled_data = self.scaler.transform(data_buffer)
+                        scaled_data = np.expand_dims(scaled_data, axis=0)  # Forma richiesta: (1, 10, 3)
+                        scaled_data = torch.tensor(scaled_data, dtype=torch.float32)  # Converti in tensore
+
+                    # Predizione
+                    with torch.no_grad():
+                        predictions = self.model(scaled_data)  # Esegui la predizione
+                        predictions = torch.sigmoid(predictions)  # Applica la sigmoide per ottenere probabilità
+
+                    # Applica una soglia per ottenere le etichette
+                    threshold = 0.5
+                    predicted_labels = (predictions > threshold).int().tolist()
+                    print(f"Predizioni: {predicted_labels}")
                     
                     '''#pred real time sui dati del tactigon
                     lista_pred = []                    
