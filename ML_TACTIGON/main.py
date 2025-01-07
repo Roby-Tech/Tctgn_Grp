@@ -13,12 +13,12 @@ if __name__ ==  '__main__':
             
             touch = tskin.touch
 
-            '''if touch and touch.one_finger == OneFingerGesture.SINGLE_TAP:
+            if touch and touch.one_finger == OneFingerGesture.SINGLE_TAP:
                 print("Inizio Ascolto")
                 tskin.select_audio()
                 time.sleep(3)
                 tskin.select_sensors()
-                print("Fine Ascolto")'''
+                print("Fine Ascolto")
 
             time.sleep(tskin.TICK)
 
