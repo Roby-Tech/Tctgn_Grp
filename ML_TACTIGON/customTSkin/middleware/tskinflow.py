@@ -127,7 +127,7 @@ class TSkinFlow(Process):
                     # Applica una soglia per ottenere le etichette
                     threshold = 0.5
                     predicted_labels = (predictions > threshold).int().tolist()
-                    print(f"Predizioni: {predicted_labels}")
+                    print(f"{predicted_labels}")
                     
                     '''#pred real time sui dati del tactigon
                     lista_pred = []                    
